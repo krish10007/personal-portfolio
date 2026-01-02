@@ -67,8 +67,8 @@ const videos = [
 
 const startups = [
   {
-    title: "MatchMyResume",
-    status: "In Build · Launching Dec 16",
+    title: "Resufixer",
+    status: "In Build · Launching March 2026",
     blurb:
       "Compare a resume against a job description in seconds. Clear score, highlights, and rewrite suggestions. Simple, fast, useful.",
     image:

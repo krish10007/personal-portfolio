@@ -75,6 +75,7 @@ const startups = [
       "https://images.unsplash.com/photo-1519389950473-47ba0277781c?q=80&w=1200&auto=format&fit=crop",
     waitlist: "#",
     progress: "https://www.youtube.com/@KrishJakhar7",
+    site: "https://resufixer.com",
   },
 ];
 
@@ -533,6 +534,16 @@ function StartupsSection() {
                     >
                       Watch Progress
                     </a>
+                    {s.site && (
+                      <a
+                        href={s.site}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="px-4 py-2 rounded-xl border border-slate-300 text-slate-800 hover:bg-slate-50"
+                      >
+                        Visit Site
+                      </a>
+                    )}
                   </div>
                 </div>
               </div>

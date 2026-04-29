@@ -1,5 +1,4 @@
-<svg width="1200" height="630" viewBox="0 0 1200 630" 
-  xmlns="http://www.w3.org/2000/svg">
+<svg width="1200" height="630" viewBox="0 0 1200 630" xmlns="http://www.w3.org/2000/svg">
   <rect width="1200" height="630" fill="#09090b"/>
   <rect x="0" y="0" width="1200" height="1" fill="#ffffff" opacity="0.07"/>
   <rect x="0" y="629" width="1200" height="1" fill="#ffffff" opacity="0.07"/>
@@ -9,27 +8,10 @@
   <line x1="1120" y1="0" x2="1120" y2="630" stroke="#ffffff" stroke-width="0.5" opacity="0.04"/>
   <line x1="0" y1="80" x2="1200" y2="80" stroke="#ffffff" stroke-width="0.5" opacity="0.04"/>
   <line x1="0" y1="550" x2="1200" y2="550" stroke="#ffffff" stroke-width="0.5" opacity="0.04"/>
-  <text x="80" y="148" font-family="'Inter', sans-serif" font-size="13" 
-    font-weight="500" fill="#ffffff" opacity="0.3" letter-spacing="4">
-    KRISHJAKHAR.COM
-  </text>
-  <text x="80" y="320" font-family="'Inter', sans-serif" font-size="112" 
-    font-weight="700" fill="#ffffff" letter-spacing="-4">
-    Krish Jakhar.
-  </text>
-  <text x="82" y="400" font-family="'Courier New', monospace" font-size="22" 
-    font-weight="400" fill="#ffffff" opacity="0.45" letter-spacing="1">
-    CS Student · Indie Developer · Startup Builder · YouTube Creator
-  </text>
-  <line x1="80" y1="500" x2="240" y2="500" stroke="#ffffff" 
-    stroke-width="0.5" opacity="0.2"/>
-  <text x="80" y="528" font-family="'Courier New', monospace" font-size="13" 
-    font-weight="400" fill="#ffffff" opacity="0.25" letter-spacing="2">
-    BUILDING IN NYC
-  </text>
-  <text x="1120" y="528" font-family="'Courier New', monospace" font-size="13" 
-    font-weight="400" fill="#ffffff" opacity="0.25" letter-spacing="2" 
-    text-anchor="end">
-    @KrishJakhar7
-  </text>
+  <text x="80" y="148" font-family="'Inter', sans-serif" font-size="13" font-weight="500" fill="#ffffff" opacity="0.3" letter-spacing="4">KRISHJAKHAR.COM</text>
+  <text x="80" y="320" font-family="'Inter', sans-serif" font-size="112" font-weight="700" fill="#ffffff" letter-spacing="-4">Krish Jakhar.</text>
+  <text x="82" y="400" font-family="'Courier New', monospace" font-size="22" font-weight="400" fill="#ffffff" opacity="0.45" letter-spacing="1">CS Student &#183; Indie Developer &#183; Startup Builder &#183; YouTube Creator</text>
+  <line x1="80" y1="500" x2="240" y2="500" stroke="#ffffff" stroke-width="0.5" opacity="0.2"/>
+  <text x="80" y="528" font-family="'Courier New', monospace" font-size="13" font-weight="400" fill="#ffffff" opacity="0.25" letter-spacing="2">BUILDING IN NYC</text>
+  <text x="1120" y="528" font-family="'Courier New', monospace" font-size="13" font-weight="400" fill="#ffffff" opacity="0.25" letter-spacing="2" text-anchor="end">@KrishJakhar7</text>
 </svg>

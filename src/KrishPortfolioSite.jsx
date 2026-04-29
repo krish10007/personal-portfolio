@@ -1,6 +1,60 @@
 import React, { useEffect, useRef, useState } from "react";
+import { motion, useInView } from "framer-motion";
+import { Download, Mail, ArrowDown } from "lucide-react";
 
-// Minimal, stable build: no framer-motion, no object-destructuring in code
+// Brand icons not in this version of lucide-react — using inline SVGs (stroke-based to match lucide style)
+function GithubIcon({ className }) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22" />
+    </svg>
+  );
+}
+function LinkedinIcon({ className }) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z" />
+      <rect x="2" y="9" width="4" height="12" rx="1" />
+      <circle cx="4" cy="4" r="2" />
+    </svg>
+  );
+}
+
+// ----------------- ANIMATION -----------------
+const FadeIn = ({ children, delay = 0, direction = "up", className = "" }) => {
+  const ref = useRef(null);
+  const isInView = useInView(ref, { once: true, margin: "-80px" });
+
+  const variants = {
+    hidden: {
+      opacity: 0,
+      y: direction === "up" ? 40 : direction === "down" ? -40 : 0,
+      x: direction === "left" ? 40 : direction === "right" ? -40 : 0,
+    },
+    visible: {
+      opacity: 1,
+      y: 0,
+      x: 0,
+      transition: {
+        duration: 0.6,
+        delay,
+        ease: [0.21, 0.47, 0.32, 0.98],
+      },
+    },
+  };
+
+  return (
+    <motion.div
+      ref={ref}
+      variants={variants}
+      initial="hidden"
+      animate={isInView ? "visible" : "hidden"}
+      className={className}
+    >
+      {children}
+    </motion.div>
+  );
+};
 
 // ----------------- DATA -----------------
 const links = {
@@ -13,69 +67,61 @@ const links = {
 
 const projects = [
   {
-    title: "AI Resume Screener",
-    blurb:
+    name: "AI Resume Screener",
+    description:
       "A Flask-based web app that uses TF-IDF + cosine similarity to match resumes with job descriptions and generate relevance scores.",
     tags: ["Python", "Flask", "NLP", "TF-IDF", "Cosine"],
-    repo: "https://github.com/krish10007/AI_Resume_Screener",
+    github: "https://github.com/krish10007/AI_Resume_Screener",
     demo: "",
-    image:
-      "https://images.unsplash.com/photo-1519389950473-47ba0277781c?q=80&w=1600&auto=format&fit=crop", // resume/paperwork desk
+    color: "green",
+    emoji: "📄",
+    glowColor: "rgba(34,197,94,0.5)",
   },
   {
-    title: "Collaborative Notes App",
-    blurb:
+    name: "Collaborative Notes App",
+    description:
       "Google Docs-lite: multiple users edit simultaneously using React + WebSockets + CRDT (Yjs). Offline-first with live presence.",
     tags: ["React", "WebSockets", "Yjs", "CRDT"],
-    repo: "https://github.com/krish10007/Real-Time-Collaborative-Notes-App",
+    github: "https://github.com/krish10007/Real-Time-Collaborative-Notes-App",
     demo: "",
-    image:
-      "https://images.unsplash.com/photo-1517433456452-f9633a875f6f?q=80&w=1600&auto=format&fit=crop", // collaboration laptops
+    color: "purple",
+    emoji: "📝",
+    glowColor: "rgba(168,85,247,0.5)",
   },
   {
-    title: "Serverless URL Shortener",
-    blurb:
+    name: "Serverless URL Shortener",
+    description:
       "Bit.ly-style short links with analytics on AWS (API Gateway, Lambda, DynamoDB, CDK). Scalable and cost-efficient.",
     tags: ["AWS", "API Gateway", "Lambda", "DynamoDB", "CDK"],
-    repo: "https://github.com/krish10007/ServerlessURLShortner",
+    github: "https://github.com/krish10007/ServerlessURLShortner",
     demo: "",
-    image:
-      "https://images.unsplash.com/photo-1518770660439-4636190af475?q=80&w=1600&auto=format&fit=crop", // code screen
+    color: "teal",
+    emoji: "🔗",
+    glowColor: "rgba(56,189,248,0.5)",
   },
 ];
 
-const videos = [
-  {
-    title: "2 Years of Computer Science in 5 minutes",
-    date: "",
-    url: "https://www.youtube.com/watch?v=B-QAd1IvyNg",
-    thumb: "https://img.youtube.com/vi/B-QAd1IvyNg/hqdefault.jpg",
-  },
-  {
-    title: "College + Big Goals",
-    date: "",
-    url: "https://www.youtube.com/watch?v=qWLTOyyGBIA",
-    thumb: "https://img.youtube.com/vi/qWLTOyyGBIA/hqdefault.jpg",
-  },
-  {
-    title: "This is what coding with AI really looks like",
-    date: "",
-    url: "https://www.youtube.com/watch?v=VHwFomOrYH8",
-    thumb: "https://img.youtube.com/vi/VHwFomOrYH8/hqdefault.jpg",
-  },
-];
+
+
 
 const startups = [
   {
-    title: "Resufixer",
-    status: "In Build · Launching March 2026",
-    blurb:
-      "Compare a resume against a job description in seconds. Clear score, highlights, and rewrite suggestions. Simple, fast, useful.",
-    image:
-      "https://images.unsplash.com/photo-1519389950473-47ba0277781c?q=80&w=1200&auto=format&fit=crop",
-    waitlist: "#",
-    progress: "https://www.youtube.com/@KrishJakhar7",
-    site: "https://resufixer.com",
+    name: "Afterly",
+    description: "An AI-powered emotional support companion for people going through breakups. Personalized healing journeys, daily check-ins, and evidence-based recovery tools.",
+    status: "completed",
+    statusLabel: "Live on App Store",
+    url: "https://useafterly.com",
+    tags: ["React Native", "Supabase", "Claude API"],
+    emoji: "💔",
+  },
+  {
+    name: "ResuFixer",
+    description: "Compare your resume against any job description in seconds. Get a clear match score, highlights, and AI rewrite suggestions.",
+    status: "waitlist",
+    statusLabel: "Waitlist Open",
+    url: "https://resufixer.com",
+    tags: ["Next.js", "TypeScript", "Tailwind", "Clerk"],
+    emoji: "📄",
   },
 ];
 
@@ -92,56 +138,261 @@ const milestones = [
   },
 ];
 
-// ----------------- PAGE -----------------
-export default function KrishPortfolioSite() {
-  const [scrolled, setScrolled] = useState(false);
-  const [open, setOpen] = useState(false);
-  const whiteRef = useRef(null);
+// ----------------- YOUTUBE HOOK -----------------
+function useYouTubeVideos(channelId) {
+  const [videos, setVideos] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(function () {
-    function onScroll() {
-      setScrolled(window.scrollY > 4);
+    if (!channelId) return;
+    const apiKey = import.meta.env.VITE_YOUTUBE_API_KEY;
+
+    async function fetchVideos() {
+      const key = import.meta.env.VITE_YOUTUBE_API_KEY;
+      if (!key) {
+        setError("API key missing — check .env file");
+        setLoading(false);
+        return;
+      }
+
+      try {
+        const channelRes = await fetch(
+          `https://www.googleapis.com/youtube/v3/channels?part=contentDetails&id=${channelId}&key=${key}`
+        );
+        const channelData = await channelRes.json();
+
+        if (channelData.error) {
+          setError(channelData.error.message);
+          setLoading(false);
+          return;
+        }
+
+        const uploadsPlaylistId =
+          channelData?.items?.[0]?.contentDetails?.relatedPlaylists?.uploads;
+
+        if (!uploadsPlaylistId) throw new Error("No uploads playlist found");
+
+        const videosRes = await fetch(
+          `https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&playlistId=${uploadsPlaylistId}&maxResults=6&key=${key}`
+        );
+        const videosData = await videosRes.json();
+
+        if (videosData.error) {
+          setError(videosData.error.message);
+          setLoading(false);
+          return;
+        }
+
+        const formatted = videosData.items.map(function (item) {
+          return {
+            id: item.snippet.resourceId.videoId,
+            title: item.snippet.title,
+            thumbnail:
+              item.snippet.thumbnails?.maxres?.url ||
+              item.snippet.thumbnails?.high?.url ||
+              item.snippet.thumbnails?.medium?.url,
+            publishedAt: item.snippet.publishedAt,
+            url: `https://www.youtube.com/watch?v=${item.snippet.resourceId.videoId}`,
+          };
+        });
+
+        setVideos(formatted);
+      } catch (err) {
+        console.error("YouTube API error:", err);
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
     }
-    onScroll();
-    window.addEventListener("scroll", onScroll);
-    document.documentElement.style.scrollBehavior = "smooth";
+
+    fetchVideos();
+  }, [channelId]);
+
+  return { videos, loading, error };
+}
+
+// ----------------- CUSTOM CURSOR -----------------
+function CustomCursor() {
+  const [pos, setPos] = useState({ x: -100, y: -100 });
+  const [dotPos, setDotPos] = useState({ x: -100, y: -100 });
+  const [isHovering, setIsHovering] = useState(false);
+  const posRef = useRef({ x: -100, y: -100 });
+  const rafRef = useRef(null);
+
+  useEffect(function () {
+    function handleMouseMove(e) {
+      posRef.current = { x: e.clientX, y: e.clientY };
+      setDotPos({ x: e.clientX, y: e.clientY });
+    }
+    function animate() {
+      setPos(function (prev) {
+        return {
+          x: prev.x + (posRef.current.x - prev.x) * 0.12,
+          y: prev.y + (posRef.current.y - prev.y) * 0.12,
+        };
+      });
+      rafRef.current = requestAnimationFrame(animate);
+    }
+    function handleMouseOver(e) {
+      if (e.target.closest("a, button")) setIsHovering(true);
+    }
+    function handleMouseOut(e) {
+      if (e.target.closest("a, button")) setIsHovering(false);
+    }
+
+    window.addEventListener("mousemove", handleMouseMove);
+    window.addEventListener("mouseover", handleMouseOver);
+    window.addEventListener("mouseout", handleMouseOut);
+    rafRef.current = requestAnimationFrame(animate);
+
     return function () {
-      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("mousemove", handleMouseMove);
+      window.removeEventListener("mouseover", handleMouseOver);
+      window.removeEventListener("mouseout", handleMouseOut);
+      cancelAnimationFrame(rafRef.current);
     };
   }, []);
 
   return (
-    <div className="min-h-screen font-sans text-slate-900">
-      <Header scrolled={scrolled} open={open} setOpen={setOpen} />
+    <>
+      {/* Outer ring — lags behind, expands on hover */}
+      <div
+        style={{
+          position: "fixed",
+          left: pos.x,
+          top: pos.y,
+          width: isHovering ? 44 : 32,
+          height: isHovering ? 44 : 32,
+          borderRadius: "50%",
+          border: `1px solid ${isHovering ? "rgba(200,245,98,0.6)" : "rgba(200,245,98,0.25)"}`,
+          transform: "translate(-50%, -50%)",
+          transition: "width 0.2s, height 0.2s, border-color 0.2s",
+          pointerEvents: "none",
+          zIndex: 9999,
+        }}
+      />
+      {/* Inner dot — follows exactly */}
+      <div
+        style={{
+          position: "fixed",
+          left: dotPos.x,
+          top: dotPos.y,
+          width: 4,
+          height: 4,
+          borderRadius: "50%",
+          background: "var(--accent)",
+          transform: "translate(-50%, -50%)",
+          pointerEvents: "none",
+          zIndex: 9999,
+        }}
+      />
+    </>
+  );
+}
+
+// ----------------- PAGE -----------------
+export default function KrishPortfolioSite() {
+  const [open, setOpen] = useState(false);
+  const whiteRef = useRef(null);
+
+  useEffect(function () {
+    document.documentElement.style.scrollBehavior = "smooth";
+  }, []);
+
+  return (
+    <div className="min-h-screen font-sans">
+      <CustomCursor />
+      <Header open={open} setOpen={setOpen} />
 
       {/* Hero */}
       <section
         id="intro"
-        className="relative h-screen bg-black text-white overflow-hidden"
+        className="min-h-screen flex flex-col items-center justify-center relative overflow-hidden pt-20"
       >
-        <div className="relative z-10 h-full flex flex-col items-center justify-center text-center px-6 select-none">
-          <h1 className="text-5xl sm:text-6xl md:text-7xl font-extrabold tracking-tight">
-            I’m Krish.
-          </h1>
-          <p className="mt-4 text-xl sm:text-2xl md:text-3xl text-white/80">
-            A Developer, Creator, and Founder.
-          </p>
-          <div className="absolute bottom-10 flex flex-col items-center text-white/70">
-            <span className="text-xs tracking-[0.2em]">SCROLL TO EXPLORE</span>
-            <span className="mt-2 animate-bounce text-2xl">↓</span>
-          </div>
-        </div>
+        {/* Background glow */}
         <div
-          className="pointer-events-none absolute inset-0 opacity-[0.035]"
+          className="pointer-events-none absolute z-0 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
           style={{
-            backgroundImage:
-              "url(\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)' opacity='0.6'/></svg>\")",
+            width: 600,
+            height: 600,
+            borderRadius: "50%",
+            background:
+              "radial-gradient(circle, rgba(200,245,98,0.05) 0%, transparent 70%)",
           }}
         />
+
+        {/* Content */}
+        <div className="relative z-10 flex flex-col items-center text-center px-6 select-none">
+          {/* Heading */}
+          <motion.h1
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.1 }}
+            className="text-6xl md:text-8xl font-bold tracking-tight text-[var(--text)] leading-none mb-6"
+          >
+            I'm Krish.
+          </motion.h1>
+
+          {/* Subtitle */}
+          <motion.p
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+            className="font-mono text-sm text-[var(--muted)] tracking-wide mb-12"
+          >
+            CS Student · Indie Developer · Startup Builder · YouTube Creator
+          </motion.p>
+
+          {/* Stats row */}
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.3 }}
+            className="flex items-center"
+          >
+            {[
+              { number: "4+",   label: "Apps Shipped" },
+              { number: "~1K",  label: "Subscribers" },
+              { number: "CUNY", label: "Queens College" },
+              { number: "NYC",  label: "Based In" },
+            ].map(function (stat, i, arr) {
+              return (
+                <div
+                  key={stat.label}
+                  className={
+                    "flex flex-col items-center px-8" +
+                    (i < arr.length - 1 ? " border-r border-[var(--border2)]" : "")
+                  }
+                >
+                  <span className="text-2xl font-bold text-[var(--text)]">
+                    {stat.number}
+                  </span>
+                  <span className="text-[10px] font-mono text-[var(--muted)] uppercase tracking-widest mt-1">
+                    {stat.label}
+                  </span>
+                </div>
+              );
+            })}
+          </motion.div>
+        </div>
+
+        {/* Scroll indicator */}
+        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2">
+          <span className="font-mono text-[10px] tracking-widest text-[var(--muted)] uppercase">
+            Scroll to Explore
+          </span>
+          <motion.div
+            animate={{ y: [0, 6, 0] }}
+            transition={{ duration: 1.5, repeat: Infinity }}
+          >
+            <ArrowDown className="w-4 h-4 text-[var(--muted)]" />
+          </motion.div>
+        </div>
       </section>
 
-      {/* White content */}
-      <div ref={whiteRef} className="bg-white text-slate-900">
+      {/* Dark content */}
+      <div ref={whiteRef}>
         <AboutSection />
         <Divider />
         <ProjectsSection />
@@ -153,6 +404,7 @@ export default function KrishPortfolioSite() {
         <TimelineSection />
         <Divider />
         <ContactSection />
+        <Footer />
       </div>
     </div>
   );
@@ -160,127 +412,97 @@ export default function KrishPortfolioSite() {
 
 // ----------------- SECTIONS -----------------
 function Header(props) {
-  const scrolled = props.scrolled;
   const open = props.open;
   const setOpen = props.setOpen;
+  const [scrolled, setScrolled] = useState(false);
+
+  useEffect(function () {
+    function handleScroll() { setScrolled(window.scrollY > 20); }
+    window.addEventListener("scroll", handleScroll);
+    return function () { window.removeEventListener("scroll", handleScroll); };
+  }, []);
+
   return (
-    <header
-      className={
-        "fixed top-0 left-0 right-0 z-30 transition-all " +
-        (scrolled
-          ? "bg-white/5 backdrop-blur-sm border-b border-white/10"
-          : "bg-transparent")
-      }
-    >
+    <header className={
+      "fixed top-0 left-0 right-0 z-50 transition-all duration-300 " +
+      (scrolled
+        ? "bg-[var(--bg)]/90 backdrop-blur-xl border-b border-[var(--border)]"
+        : "bg-transparent border-b border-transparent")
+    }>
       <div className="mx-auto max-w-7xl px-5 py-4 grid grid-cols-3 items-center">
         {/* Left: brand */}
-        <div className="flex items-center gap-3 text-white">
-          <a
-            href="#intro"
-            aria-label="Home"
-            className="flex items-center gap-3 group"
-          >
-            <span className="relative inline-flex h-4 w-4" aria-hidden>
-              <span className="absolute inline-flex h-full w-full rounded-full bg-white/80" />
-              <span className="absolute inline-flex h-full w-full rounded-full bg-white/80 opacity-75 animate-ping" />
-            </span>
-            <span className="text-sm tracking-wider text-white/90 group-hover:text-white transition">
-              KRISH
+        <div>
+          <a href="#intro" aria-label="Home" className="inline-flex items-center group">
+            <span className="font-mono text-sm tracking-widest uppercase text-[var(--text)] group-hover:text-[var(--text)] transition-colors">
+              KRISH<span style={{ color: "var(--accent)" }}>.</span>
             </span>
           </a>
         </div>
 
-        {/* Center: nav perfectly centered */}
-        <nav className="hidden md:flex items-center justify-center gap-8 text-sm text-white col-start-2 col-end-3">
-          <a href="#about" className="hover:opacity-90">
-            About
-          </a>
-          <a href="#projects" className="hover:opacity-90">
-            Projects
-          </a>
-          <a href="#startups" className="hover:opacity-90">
-            Startups
-          </a>
-          <a href="#videos" className="hover:opacity-90">
-            Videos
-          </a>
-          <a href="#timeline" className="hover:opacity-90">
-            Timeline
-          </a>
+        {/* Center: nav */}
+        <nav className="hidden md:flex items-center justify-center gap-8 col-start-2 col-end-3">
+          {["about", "projects", "startups", "videos", "timeline"].map(function (id) {
+            return (
+              <a
+                key={id}
+                href={"#" + id}
+                className="font-mono text-xs tracking-wide text-[var(--muted)] hover:text-[var(--text)] transition-colors duration-200 capitalize"
+              >
+                {id}
+              </a>
+            );
+          })}
           <a
             href={links.resume}
             target="_blank"
             rel="noopener noreferrer"
             download
-            className="hover:opacity-90"
+            className="font-mono text-xs tracking-wide text-[var(--muted)] hover:text-[var(--text)] transition-colors duration-200"
           >
             Resume
           </a>
         </nav>
 
-        {/* Right: icon buttons (old style) */}
-        <div className="hidden md:flex items-center justify-end gap-3 text-white">
-          <a
-            href={links.resume}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-white/20 hover:border-white/40"
-            title="Resume"
-            download
-          >
-            {/* download icon */}
-            <svg
-              width="18"
-              height="18"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-              <polyline points="7 10 12 15 17 10" />
-              <line x1="12" y1="15" x2="12" y2="3" />
-            </svg>
-          </a>
+        {/* Right: icons + contact */}
+        <div className="hidden md:flex items-center justify-end gap-2">
           <a
             href={links.github}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-white/20 hover:border-white/40"
             title="GitHub"
+            className="border border-[var(--border2)] rounded-full p-2 flex items-center justify-center text-[var(--muted)] hover:border-accent hover:text-accent hover:bg-[rgba(200,245,98,0.08)] transition-all duration-200"
           >
-            <svg
-              width="18"
-              height="18"
-              viewBox="0 0 24 24"
-              aria-hidden="true"
-              fill="currentColor"
-            >
-              <path d="M12 .5C5.73.5.77 5.46.77 11.73c0 4.9 3.17 9.06 7.57 10.53.55.1.75-.24.75-.53v-1.86c-3.08.67-3.73-1.3-3.73-1.3-.5-1.27-1.22-1.61-1.22-1.61-.99-.68.08-.67.08-.67 1.09.08 1.66 1.12 1.66 1.12.97 1.66 2.55 1.18 3.17.9.1-.7.38-1.18.69-1.45-2.46-.28-5.05-1.23-5.05-5.49 0-1.21.43-2.2 1.12-2.98-.11-.28-.49-1.41.11-2.94 0 0 .93-.3 3.05 1.13a10.5 10.5 0 0 1 5.56 0c2.12-1.43 3.05-1.13 3.05-1.13.6 1.53.22 2.66.11 2.94.69.78 1.12 1.77 1.12 2.98 0 4.27-2.59 5.2-5.06 5.48.39.34.73 1 .73 2.02v2.99c0 .29.2.64.76.53 4.39-1.47 7.56-5.63 7.56-10.53C23.23 5.46 18.27.5 12 .5z" />
-            </svg>
+            <GithubIcon className="w-4 h-4" />
           </a>
           <a
             href={links.linkedin}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-white/20 hover:border-white/40"
             title="LinkedIn"
+            className="border border-[var(--border2)] rounded-full p-2 flex items-center justify-center text-[var(--muted)] hover:border-accent hover:text-accent hover:bg-[rgba(200,245,98,0.08)] transition-all duration-200"
           >
-            <svg
-              width="18"
-              height="18"
-              viewBox="0 0 24 24"
-              aria-hidden="true"
-              fill="currentColor"
-            >
-              <path d="M4.98 3.5A2.5 2.5 0 1 1 0 3.5a2.5 2.5 0 0 1 4.98 0zM.5 8.5h4V24h-4V8.5zM8 8.5h3.8v2.1h.1c.5-1 1.8-2.1 3.7-2.1 3.9 0 4.6 2.6 4.6 6V24h-4v-6.4c0-1.5 0-3.5-2.1-3.5s-2.4 1.7-2.4 3.4V24H8V8.5z" />
-            </svg>
+            <LinkedinIcon className="w-4 h-4" />
+          </a>
+          <a
+            href={links.resume}
+            target="_blank"
+            rel="noopener noreferrer"
+            download
+            title="Download Resume"
+            className="border border-[var(--border2)] rounded-full p-2 flex items-center justify-center text-[var(--muted)] hover:border-accent hover:text-accent hover:bg-[rgba(200,245,98,0.08)] transition-all duration-200"
+          >
+            <Download className="w-4 h-4" />
+          </a>
+          <a
+            href={links.email}
+            title="Email"
+            className="border border-[var(--border2)] rounded-full p-2 flex items-center justify-center text-[var(--muted)] hover:border-accent hover:text-accent hover:bg-[rgba(200,245,98,0.08)] transition-all duration-200"
+          >
+            <Mail className="w-4 h-4" />
           </a>
           <a
             href="#contact"
-            className="ml-1 text-xs rounded-full px-4 py-2 border border-white/20 hover:border-white/40 text-white/85 hover:text-white transition"
+            className="ml-2 bg-accent text-[#0a0a0a] font-semibold text-xs px-4 py-2 rounded-md hover:bg-accent2 transition-all duration-200 active:scale-95"
           >
             Contact
           </a>
@@ -289,120 +511,58 @@ function Header(props) {
         {/* Mobile menu button */}
         <div className="md:hidden flex items-center justify-end col-start-3 justify-self-end">
           <button
-            onClick={function () {
-              setOpen(!open);
-            }}
-            className="inline-flex items-center justify-center h-9 w-9 rounded-md border border-white/15 hover:border-white/30"
+            onClick={function () { setOpen(!open); }}
+            className="inline-flex items-center justify-center h-9 w-9 rounded-md border border-[var(--border2)] hover:border-[var(--border2)] text-[var(--muted)]"
             aria-label="Open menu"
           >
             <span className="sr-only">Menu</span>
             <div className="space-y-1.5">
-              <span
-                className={
-                  "block h-0.5 w-5 bg-white transition " +
-                  (open ? "rotate-45 translate-y-1.5" : "")
-                }
-              ></span>
-              <span
-                className={
-                  "block h-0.5 w-5 bg-white transition " +
-                  (open ? "opacity-0" : "")
-                }
-              ></span>
-              <span
-                className={
-                  "block h-0.5 w-5 bg-white transition " +
-                  (open ? "-rotate-45 -translate-y-1.5" : "")
-                }
-              ></span>
+              <span className={"block h-0.5 w-5 bg-[var(--text)] transition " + (open ? "rotate-45 translate-y-1.5" : "")} />
+              <span className={"block h-0.5 w-5 bg-[var(--text)] transition " + (open ? "opacity-0" : "")} />
+              <span className={"block h-0.5 w-5 bg-[var(--text)] transition " + (open ? "-rotate-45 -translate-y-1.5" : "")} />
             </div>
           </button>
         </div>
       </div>
+
       {/* Mobile dropdown */}
       <div
         className={
           "md:hidden overflow-hidden transition-[max-height,opacity] duration-300 " +
-          (open ? "max-h-64 opacity-100" : "max-h-0 opacity-0")
+          (open ? "max-h-72 opacity-100" : "max-h-0 opacity-0")
         }
       >
-        <div className="px-5 pb-4 pt-0 text-white">
-          <ul className="flex flex-col gap-3 text-sm">
+        <div className="px-5 pb-4 pt-2 border-t border-[var(--border)]">
+          <ul className="flex flex-col gap-1 font-mono text-sm">
+            {["about", "projects", "startups", "videos", "timeline"].map(function (id) {
+              return (
+                <li key={id}>
+                  <a
+                    onClick={function () { setOpen(false); }}
+                    href={"#" + id}
+                    className="block py-2 text-[var(--muted)] hover:text-[var(--text)] capitalize transition-colors"
+                  >
+                    {id}
+                  </a>
+                </li>
+              );
+            })}
             <li>
               <a
-                onClick={function () {
-                  setOpen(false);
-                }}
-                href="#about"
-                className="block py-2 text-white/80 hover:text-white"
-              >
-                About
-              </a>
-            </li>
-            <li>
-              <a
-                onClick={function () {
-                  setOpen(false);
-                }}
-                href="#projects"
-                className="block py-2 text-white/80 hover:text-white"
-              >
-                Projects
-              </a>
-            </li>
-            <li>
-              <a
-                onClick={function () {
-                  setOpen(false);
-                }}
-                href="#startups"
-                className="block py-2 text-white/80 hover:text-white"
-              >
-                Startups
-              </a>
-            </li>
-            <li>
-              <a
-                onClick={function () {
-                  setOpen(false);
-                }}
-                href="#videos"
-                className="block py-2 text-white/80 hover:text-white"
-              >
-                Videos
-              </a>
-            </li>
-            <li>
-              <a
-                onClick={function () {
-                  setOpen(false);
-                }}
-                href="#timeline"
-                className="block py-2 text-white/80 hover:text-white"
-              >
-                Timeline
-              </a>
-            </li>
-            <li>
-              <a
-                onClick={function () {
-                  setOpen(false);
-                }}
+                onClick={function () { setOpen(false); }}
                 href={links.resume}
-                className="block py-2 text-white/90 hover:text-white"
+                className="block py-2 text-[var(--muted)] hover:text-[var(--text)] transition-colors"
               >
                 Resume ↗
               </a>
             </li>
-            <li className="pt-1">
+            <li className="pt-2">
               <a
-                onClick={function () {
-                  setOpen(false);
-                }}
+                onClick={function () { setOpen(false); }}
                 href={links.email}
-                className="inline-flex items-center gap-2 py-2 text-white/90"
+                className="inline-flex items-center gap-2 py-2 text-[var(--muted)] hover:text-accent transition-colors"
               >
-                <span className="h-1.5 w-1.5 rounded-full bg-emerald-400"></span>
+                <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
                 Email
               </a>
             </li>
@@ -417,54 +577,58 @@ function AboutSection() {
   return (
     <section
       id="about"
-      className="px-6 md:px-12 lg:px-16 pt-16 md:pt-24 pb-16 md:pb-24"
+      className="section-glow-top px-6 md:px-12 lg:px-16 pt-16 md:pt-24 pb-16 md:pb-24 bg-[var(--bg2)]"
     >
       <div className="mx-auto max-w-7xl grid md:grid-cols-2 gap-12 items-center">
-        <div>
-          <h2 className="text-3xl md:text-4xl font-extrabold tracking-tight">
-            Turning ideas into real products.
-          </h2>
-          <p className="mt-4 text-lg md:text-xl text-slate-600">
-            I’m Krish, a CS student at CUNY Queens College focused on Software
-            Engineering and Cloud. I design, build, and ship practical tools —
-            from AI APIs with Flask to full‑stack web apps on AWS.
-          </p>
-          <div className="mt-8 flex flex-wrap gap-3">
-            <a
-              href={links.resume}
-              target="_blank"
-              rel="noopener noreferrer"
-              download
-              className="px-5 py-2.5 rounded-xl border border-slate-300 text-slate-800 hover:bg-slate-50"
-            >
-              Resume ↓
-            </a>
-            <a
-              href={links.linkedin}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="px-5 py-2.5 rounded-xl bg-slate-900 text-white hover:bg-slate-800"
-            >
-              LinkedIn →
-            </a>
-          </div>
-        </div>
-        <div className="rounded-2xl border border-slate-200 shadow-sm p-6 bg-white">
-          <div className="flex items-center gap-4">
-            <div className="h-16 w-16 rounded-full bg-gradient-to-br from-indigo-400 to-cyan-300" />
-            <div>
-              <div className="font-semibold">Krish Jakhar</div>
-              <div className="text-slate-500 text-sm">
-                Developer · Creator · Founder
-              </div>
+        <FadeIn direction="right">
+          <div>
+            <h2 className="text-4xl md:text-5xl font-extrabold tracking-tight text-[var(--text)]">
+              Turning ideas into real products.
+            </h2>
+            <p className="mt-6 text-lg md:text-xl text-[var(--muted)] border-l-2 border-[var(--accent)] pl-6">
+              I'm Krish, a CS student at CUNY Queens College focused on Software
+              Engineering and Cloud. I design, build, and ship practical tools —
+              from AI APIs with Flask to full‑stack web apps on AWS.
+            </p>
+            <div className="mt-8 flex flex-wrap gap-3">
+              <a
+                href={links.resume}
+                target="_blank"
+                rel="noopener noreferrer"
+                download
+                className="px-5 py-2.5 rounded-xl border border-[var(--border2)] text-[var(--text)] hover:bg-[var(--bg3)] transition"
+              >
+                Resume ↓
+              </a>
+              <a
+                href={links.linkedin}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="px-5 py-2.5 rounded-xl bg-accent text-[#0a0a0a] font-semibold hover:bg-accent2 transition"
+              >
+                LinkedIn →
+              </a>
             </div>
           </div>
-          <div className="mt-6 grid grid-cols-3 gap-3 text-center">
-            <Stat kpi="4+" label="Projects" />
-            <Stat kpi="AWS" label="SAA Passed" />
-            <Stat kpi="NYC" label="Based" />
+        </FadeIn>
+        <FadeIn direction="left" delay={0.15}>
+          <div className="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-8">
+            <div className="flex items-center gap-4">
+              <div className="h-16 w-16 rounded-full bg-gradient-to-br from-indigo-400 to-cyan-300" />
+              <div>
+                <div className="font-semibold text-[var(--text)]">Krish Jakhar</div>
+                <div className="text-[var(--muted)] text-sm">
+                  Developer · Creator · Founder
+                </div>
+              </div>
+            </div>
+            <div className="mt-6 grid grid-cols-3 gap-3 text-center">
+              <Stat kpi="4+" label="Projects" />
+              <Stat kpi="AWS" label="SAA Passed" />
+              <Stat kpi="NYC" label="Based" />
+            </div>
           </div>
-        </div>
+        </FadeIn>
       </div>
     </section>
   );
@@ -472,12 +636,40 @@ function AboutSection() {
 
 function ProjectsSection() {
   return (
-    <section id="projects" className="px-6 md:px-12 lg:px-16 py-16 md:py-24">
-      <div className="mx-auto max-w-7xl">
-        <h3 className="text-2xl md:text-3xl font-bold">Featured Projects</h3>
-        <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {projects.map(function (p) {
-            return <ProjectCard key={p.title} item={p} />;
+    <section id="projects" className="section-glow-top py-24 px-6 md:px-16 bg-[var(--bg)]">
+      <div className="max-w-5xl mx-auto">
+        <FadeIn>
+          <p className="font-mono text-xs text-[var(--accent)] tracking-[3px] uppercase mb-3 flex items-center gap-3">
+            <span className="w-6 h-px bg-[var(--accent)] inline-block" />
+            Projects
+          </p>
+        </FadeIn>
+        <FadeIn delay={0.1}>
+          <h2 className="text-5xl md:text-6xl font-bold tracking-tight text-[var(--text)] mb-4">
+            Things I've built.
+          </h2>
+        </FadeIn>
+        <FadeIn delay={0.15}>
+          <p className="font-mono text-sm font-light tracking-wide text-[var(--muted)] mb-16">
+            Personal projects, side experiments, and shipped work.
+          </p>
+        </FadeIn>
+
+        {/* Featured first project */}
+        <div className="mb-6">
+          <FadeIn>
+            <ProjectCard project={projects[0]} featured />
+          </FadeIn>
+        </div>
+
+        {/* Remaining projects in 2-col grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {projects.slice(1).map(function (p, i) {
+            return (
+              <FadeIn key={p.name} delay={i * 0.1}>
+                <ProjectCard project={p} />
+              </FadeIn>
+            );
           })}
         </div>
       </div>
@@ -487,66 +679,30 @@ function ProjectsSection() {
 
 function StartupsSection() {
   return (
-    <section
-      id="startups"
-      className="px-6 md:px-12 lg:px-16 py-12 md:py-16 bg-white"
-    >
-      <div className="mx-auto max-w-7xl">
-        <h3 className="text-2xl md:text-3xl font-bold">Startups</h3>
-        <p className="mt-2 text-slate-600">Things I’m building and shipping.</p>
-        <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {startups.map(function (s) {
+    <section id="startups" className="section-glow-top py-24 px-6 md:px-16 bg-[var(--bg2)]">
+      <div className="max-w-5xl mx-auto">
+        <FadeIn>
+          <p className="font-mono text-xs text-[var(--accent)] tracking-[3px] uppercase mb-3 flex items-center gap-3">
+            <span className="w-6 h-px bg-[var(--accent)] inline-block" />
+            Startups
+          </p>
+        </FadeIn>
+        <FadeIn delay={0.1}>
+          <h2 className="text-5xl md:text-6xl font-bold tracking-tight text-[var(--text)] mb-4">
+            Things I'm building.
+          </h2>
+        </FadeIn>
+        <FadeIn delay={0.15}>
+          <p className="font-mono text-sm font-light tracking-wide text-[var(--muted)] mb-16">
+            Real products. Real users. Real stakes.
+          </p>
+        </FadeIn>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {startups.map(function (startup, i) {
             return (
-              <div
-                key={s.title}
-                className="group overflow-hidden rounded-2xl ring-1 ring-slate-200 bg-white shadow-sm hover:shadow-lg transition"
-              >
-                <div className="relative">
-                  <img
-                    src={s.image}
-                    alt={s.title}
-                    className="h-44 w-full object-cover"
-                  />
-                  <div className="absolute top-3 left-3 inline-flex items-center gap-2 text-xs md:text-sm px-3 py-1.5 rounded-full bg-emerald-50 text-emerald-700 ring-1 ring-emerald-200">
-                    <span className="h-1.5 w-1.5 rounded-full bg-emerald-500"></span>{" "}
-                    {s.status}
-                  </div>
-                </div>
-                <div className="p-6">
-                  <h4 className="text-lg font-semibold">{s.title}</h4>
-                  <p className="mt-2 text-sm text-slate-600 leading-relaxed">
-                    {s.blurb}
-                  </p>
-                  <div className="mt-4 flex flex-wrap gap-3">
-                    <a
-                      href={s.waitlist}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="px-4 py-2 rounded-xl border border-slate-300 text-slate-800 hover:bg-slate-50"
-                    >
-                      Join Waitlist
-                    </a>
-                    <a
-                      href={s.progress}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="px-4 py-2 rounded-xl border border-slate-300 text-slate-800 hover:bg-slate-50"
-                    >
-                      Watch Progress
-                    </a>
-                    {s.site && (
-                      <a
-                        href={s.site}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="px-4 py-2 rounded-xl border border-slate-300 text-slate-800 hover:bg-slate-50"
-                      >
-                        Visit Site
-                      </a>
-                    )}
-                  </div>
-                </div>
-              </div>
+              <FadeIn key={startup.name} delay={i * 0.1}>
+                <StartupCard startup={startup} />
+              </FadeIn>
             );
           })}
         </div>
@@ -556,100 +712,262 @@ function StartupsSection() {
 }
 
 function YouTubeSection() {
+  const CHANNEL_ID = "UC8SxrtagHoT3eC8r2cQdCgw";
+  const { videos, loading, error } = useYouTubeVideos(CHANNEL_ID);
+
   return (
-    <section
-      id="videos"
-      className="px-6 md:px-12 lg:px-16 py-16 md:py-24 bg-[#F8FAFF]"
-    >
-      <div className="mx-auto max-w-7xl">
-        <h3 className="text-2xl md:text-3xl font-bold">Latest Videos</h3>
-        <p className="mt-2 text-slate-600">
-          Documenting the journey — building, learning, and life in NYC.
-        </p>
-        <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {videos.map(function (v) {
-            return (
-              <a
-                key={v.title}
-                href={v.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="group"
-              >
-                <div className="relative overflow-hidden rounded-2xl ring-1 ring-slate-200 bg-white shadow-sm">
-                  <img
-                    src={v.thumb}
-                    alt={v.title}
-                    className="h-44 w-full object-cover"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-black/10 to-transparent" />
-                  <div className="absolute bottom-3 left-3 right-3 flex items-center justify-between">
-                    <div>
-                      <div className="text-white text-sm font-semibold drop-shadow">
-                        {v.title}
-                      </div>
-                      {v.date ? (
-                        <div className="text-white/80 text-xs drop-shadow">
-                          {new Date(v.date).toLocaleDateString()}
-                        </div>
-                      ) : null}
-                    </div>
-                    <span className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-white/90 text-slate-900">
-                      ▶
-                    </span>
+    <section id="videos" className="section-glow-top py-24 px-6 md:px-16 bg-[var(--bg2)]">
+      <div className="max-w-5xl mx-auto">
+
+        {/* Section label */}
+        <FadeIn>
+          <p className="font-mono text-xs text-[var(--accent)] tracking-[3px] uppercase mb-3 flex items-center gap-3">
+            <span className="w-6 h-px bg-[var(--accent)] inline-block" />
+            YouTube
+          </p>
+        </FadeIn>
+
+        <FadeIn delay={0.1}>
+          <h2 className="text-5xl md:text-6xl font-bold tracking-tight text-[var(--text)] mb-2">
+            Startup Diaries.
+          </h2>
+        </FadeIn>
+
+        <FadeIn delay={0.15}>
+          <div className="flex items-center justify-between mb-16">
+            <p className="font-mono text-sm font-light tracking-wide text-[var(--muted)]">
+              Documenting the journey — building, learning, and life in NYC.
+            </p>
+            <a
+              href="https://youtube.com/@KrishJakhar7"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-mono text-xs text-[var(--accent)] border border-[rgba(200,245,98,0.25)] bg-[rgba(200,245,98,0.07)] px-4 py-2 rounded-full hover:bg-[rgba(200,245,98,0.12)] transition-all duration-200 flex items-center gap-2 whitespace-nowrap ml-8"
+            >
+              <span className="w-1.5 h-1.5 rounded-full bg-[var(--accent)]" />
+              @KrishJakhar7
+            </a>
+          </div>
+        </FadeIn>
+
+        {/* Loading skeleton */}
+        {loading && (
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {[...Array(6)].map(function (_, i) {
+              return (
+                <div key={i} className="bg-[var(--card)] border border-[var(--border)] rounded-2xl overflow-hidden animate-pulse">
+                  <div className="h-44 bg-[var(--bg3)]" />
+                  <div className="p-5">
+                    <div className="h-3 bg-[var(--bg3)] rounded mb-2 w-3/4" />
+                    <div className="h-3 bg-[var(--bg3)] rounded w-1/2" />
                   </div>
                 </div>
+              );
+            })}
+          </div>
+        )}
+
+        {/* Error state — fallback cards */}
+        {error && !loading && (
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {[
+              { title: "2 Years of Computer Science in 5 minutes", url: "https://youtube.com/@KrishJakhar7" },
+              { title: "College + Big Goals", url: "https://youtube.com/@KrishJakhar7" },
+              { title: "This is what coding with AI really looks like", url: "https://youtube.com/@KrishJakhar7" },
+            ].map(function (v, i) {
+              return (
+                <a key={i} href={v.url} target="_blank" rel="noopener noreferrer"
+                  className="group block bg-[var(--card)] border border-[var(--border)] rounded-2xl overflow-hidden transition-all duration-300 hover:border-[var(--border2)] hover:-translate-y-1 hover:shadow-[0_0_40px_rgba(200,245,98,0.04)]">
+                  <div className="h-44 bg-gradient-to-br from-[#0a0a0a] to-[#1a1a1e] flex items-center justify-center relative overflow-hidden">
+                    <div className="absolute inset-0 opacity-10"
+                      style={{
+                        backgroundImage: "linear-gradient(var(--border) 1px, transparent 1px), linear-gradient(90deg, var(--border) 1px, transparent 1px)",
+                        backgroundSize: "32px 32px",
+                      }}
+                    />
+                    <div className="relative z-10 w-12 h-12 rounded-full bg-[var(--accent)] flex items-center justify-center">
+                      <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                        <path d="M4 2.5L13 8L4 13.5V2.5Z" fill="#0a0a0a" />
+                      </svg>
+                    </div>
+                  </div>
+                  <div className="p-5">
+                    <p className="text-sm font-medium text-[var(--text)] leading-snug group-hover:text-[var(--accent)] transition-colors duration-200">
+                      {v.title}
+                    </p>
+                    <p className="font-mono text-[11px] text-[var(--muted)] mt-2">
+                      Watch on YouTube →
+                    </p>
+                  </div>
+                </a>
+              );
+            })}
+          </div>
+        )}
+
+        {/* Videos grid */}
+        {!loading && !error && (
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {videos.map(function (video, i) {
+              return (
+                <FadeIn key={video.id} delay={i * 0.08}>
+                  <a
+                    href={video.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="group block bg-[var(--card)] border border-[var(--border)] rounded-2xl overflow-hidden transition-all duration-300 hover:border-[var(--border2)] hover:-translate-y-1 hover:shadow-[0_0_40px_rgba(200,245,98,0.04)]"
+                  >
+                    {/* Thumbnail */}
+                    <div className="relative h-44 overflow-hidden bg-[var(--bg3)]">
+                      {video.thumbnail && (
+                        <img
+                          src={video.thumbnail}
+                          alt={video.title}
+                          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                        />
+                      )}
+                      {/* Play button overlay */}
+                      <div className="absolute inset-0 flex items-center justify-center bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                        <div className="w-12 h-12 rounded-full bg-[var(--accent)] flex items-center justify-center scale-75 group-hover:scale-100 transition-transform duration-300">
+                          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M4 2.5L13 8L4 13.5V2.5Z" fill="#0a0a0a" />
+                          </svg>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Info */}
+                    <div className="p-5">
+                      <p className="text-sm font-medium text-[var(--text)] leading-snug mb-2 line-clamp-2 group-hover:text-[var(--accent)] transition-colors duration-200">
+                        {video.title}
+                      </p>
+                      <p className="font-mono text-[11px] text-[var(--muted)]">
+                        {new Date(video.publishedAt).toLocaleDateString("en-US", {
+                          month: "short",
+                          day: "numeric",
+                          year: "numeric",
+                        })}
+                      </p>
+                    </div>
+                  </a>
+                </FadeIn>
+              );
+            })}
+          </div>
+        )}
+
+        {/* See all link */}
+        {!loading && !error && (
+          <FadeIn delay={0.3}>
+            <div className="mt-12 text-center">
+              <a
+                href="https://youtube.com/@KrishJakhar7"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="font-mono text-sm text-[var(--muted)] hover:text-[var(--accent)] transition-colors duration-200 inline-flex items-center gap-2"
+              >
+                See all videos on YouTube →
               </a>
-            );
-          })}
-        </div>
-        <div className="mt-6">
-          <a
-            href={links.youtube}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 text-slate-800 hover:text-slate-900"
-          >
-            <span>See all on YouTube</span>
-            <span>↗</span>
-          </a>
-        </div>
+            </div>
+          </FadeIn>
+        )}
+
       </div>
     </section>
   );
 }
 
 function TimelineSection() {
+  const lineRef = useRef(null);
+  const containerRef = useRef(null);
+  const isInView = useInView(containerRef, { once: true, margin: "-100px" });
+
   return (
-    <section
-      id="timeline"
-      className="px-6 md:px-12 lg:px-16 py-16 md:py-24 bg-[#F8FAFF]"
-    >
-      <div className="mx-auto max-w-5xl">
-        <h3 className="text-2xl md:text-3xl font-bold text-center mb-12">
-          Timeline of Progress
-        </h3>
-        <div className="relative">
-          <div className="absolute left-4 md:left-1/2 md:-translate-x-1/2 top-0 bottom-0 w-px bg-slate-200" />
-          {milestones.map(function (t, idx) {
-            return (
-              <div
-                key={idx}
-                className={
-                  "relative mb-10 md:mb-14 md:w-1/2 " +
-                  (idx % 2 ? "md:ml-auto md:pl-8" : "md:pr-8")
-                }
-              >
-                <div className="absolute left-0 md:left-auto md:right-full md:translate-x-1/2 top-2 w-2 h-2 bg-[#6AA3FF] rounded-full shadow" />
-                <div className="p-5 rounded-xl bg-white ring-1 ring-slate-200">
-                  <div className="text-xs uppercase tracking-wide text-slate-500">
-                    {t.when}
+    <section id="timeline" className="section-glow-top py-24 px-6 md:px-16 bg-[var(--bg)]">
+      <div className="max-w-4xl mx-auto">
+
+        {/* Section label */}
+        <FadeIn>
+          <p className="font-mono text-xs text-[var(--accent)] tracking-[3px] uppercase mb-3 flex items-center gap-3">
+            <span className="w-6 h-px bg-[var(--accent)] inline-block" />
+            Timeline
+          </p>
+        </FadeIn>
+
+        <FadeIn delay={0.1}>
+          <h2 className="text-5xl md:text-6xl font-bold tracking-tight text-[var(--text)] mb-4">
+            The journey so far.
+          </h2>
+        </FadeIn>
+
+        <FadeIn delay={0.15}>
+          <p className="font-mono text-sm font-light tracking-wide text-[var(--muted)] mb-20">
+            Every milestone that got me here.
+          </p>
+        </FadeIn>
+
+        {/* Timeline container */}
+        <div ref={containerRef} className="relative">
+
+          {/* Animated accent line that draws downward */}
+          <motion.div
+            ref={lineRef}
+            className="absolute left-1/2 -translate-x-1/2 top-0 w-px bg-[var(--accent)] origin-top"
+            initial={{ scaleY: 0, opacity: 0 }}
+            animate={isInView ? { scaleY: 1, opacity: 1 } : { scaleY: 0, opacity: 0 }}
+            transition={{ duration: 1.4, ease: [0.21, 0.47, 0.32, 0.98] }}
+            style={{ height: "100%" }}
+          />
+
+          {/* Static background line (faint guide, always visible) */}
+          <div className="absolute left-1/2 -translate-x-1/2 top-0 w-px h-full bg-[var(--border2)]" />
+
+          {/* Milestone items */}
+          <div className="flex flex-col gap-12 relative">
+            {milestones.map(function (milestone, i) {
+              const isLeft = i % 2 === 0;
+              return (
+                <FadeIn
+                  key={i}
+                  direction={isLeft ? "right" : "left"}
+                  delay={0.2 + i * 0.15}
+                >
+                  <div className={"flex items-center gap-8 " + (isLeft ? "flex-row" : "flex-row-reverse")}>
+
+                    {/* Card */}
+                    <div
+                      className={
+                        "w-5/12 group bg-[var(--card)] border border-[var(--border)] rounded-2xl p-6 transition-all duration-300 hover:border-[var(--border2)] hover:-translate-y-1 hover:shadow-[0_0_30px_rgba(200,245,98,0.04)] " +
+                        (isLeft ? "text-right" : "text-left")
+                      }
+                    >
+                      <p className="font-mono text-[11px] text-[var(--accent)] tracking-widest uppercase mb-2">
+                        {milestone.when}
+                      </p>
+                      <p className="text-sm font-medium text-[var(--text)] leading-relaxed">
+                        {milestone.what}
+                      </p>
+                    </div>
+
+                    {/* Center dot */}
+                    <div className="relative z-10 flex-shrink-0 w-2/12 flex items-center justify-center">
+                      <motion.div
+                        initial={{ scale: 0, opacity: 0 }}
+                        animate={isInView ? { scale: 1, opacity: 1 } : { scale: 0, opacity: 0 }}
+                        transition={{ duration: 0.4, delay: 0.3 + i * 0.15, ease: "backOut" }}
+                        className="w-3 h-3 rounded-full bg-[var(--accent)] ring-4 ring-[var(--bg)]"
+                      />
+                    </div>
+
+                    {/* Empty space opposite side */}
+                    <div className="w-5/12" />
+
                   </div>
-                  <div className="mt-1 font-medium">{t.what}</div>
-                </div>
-              </div>
-            );
-          })}
+                </FadeIn>
+              );
+            })}
+          </div>
+
         </div>
       </div>
     </section>
@@ -658,120 +976,303 @@ function TimelineSection() {
 
 function ContactSection() {
   return (
-    <section
-      id="contact"
-      className="px-6 md:px-12 lg:px-16 py-20 md:py-28 bg-white"
-    >
-      <div className="mx-auto max-w-4xl text-center">
-        <h3 className="text-2xl md:text-3xl font-bold">Let’s Connect</h3>
-        <p className="mt-3 text-slate-600 max-w-2xl mx-auto">
-          Always open to SWE/Cloud internships, collabs, or feedback on my
-          products. If something here resonates, reach out — I reply fast.
-        </p>
-        <div className="mt-7 flex flex-wrap gap-3 justify-center">
-          <a
-            href={links.email}
-            className="px-5 py-2.5 rounded-xl bg-slate-900 text-white hover:bg-slate-800"
-          >
-            Email Me
-          </a>
-          <a
-            href={links.resume}
-            target="_blank"
-            rel="noopener noreferrer"
-            download
-            className="px-5 py-2.5 rounded-xl border border-slate-300 text-slate-800 hover:bg-slate-50"
-          >
-            Download Resume
-          </a>
-          <a
-            href={links.linkedin}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="px-5 py-2.5 rounded-xl border border-slate-300 text-slate-800 hover:bg-slate-50"
-          >
-            LinkedIn
-          </a>
-          <a
-            href={links.github}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="px-5 py-2.5 rounded-xl border border-slate-300 text-slate-800 hover:bg-slate-50"
-          >
-            GitHub
-          </a>
-        </div>
-        <p className="mt-8 text-center text-xs text-slate-500">
-          © {new Date().getFullYear()} Krish Jakhar
-        </p>
+    <section id="contact" className="section-glow-top py-24 px-6 md:px-16 bg-[var(--bg)]">
+      <div className="max-w-4xl mx-auto">
+        <motion.div
+          className="bg-[var(--card)] border rounded-3xl p-12 md:p-20 text-center relative overflow-hidden"
+          animate={{
+            borderColor: [
+              "rgba(255,255,255,0.07)",
+              "rgba(200,245,98,0.15)",
+              "rgba(255,255,255,0.07)",
+            ],
+          }}
+          transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+        >
+          {/* Background glow */}
+          <div
+            className="absolute inset-0 pointer-events-none"
+            style={{
+              background: `
+                radial-gradient(ellipse at 50% -20%, rgba(200,245,98,0.08) 0%, transparent 60%),
+                radial-gradient(ellipse at 50% 120%, rgba(200,245,98,0.04) 0%, transparent 60%)
+              `,
+            }}
+          />
+
+          <div className="relative z-10">
+            {/* Label */}
+            <FadeIn>
+              <p className="font-mono text-xs text-[var(--accent)] tracking-[3px] uppercase mb-6 flex items-center justify-center gap-3">
+                <span className="w-6 h-px bg-[var(--accent)]" />
+                Let's connect
+                <span className="w-6 h-px bg-[var(--accent)]" />
+              </p>
+            </FadeIn>
+
+            {/* Heading */}
+            <FadeIn delay={0.1}>
+              <h2 className="text-4xl md:text-6xl font-bold tracking-tight text-[var(--text)] leading-tight mb-6">
+                Ready to build<br />
+                <span style={{ color: "var(--accent)" }}>something great?</span>
+              </h2>
+            </FadeIn>
+
+            {/* Subtext */}
+            <FadeIn delay={0.2}>
+              <p className="text-sm text-[var(--muted)] font-light leading-relaxed max-w-md mx-auto mb-12">
+                Always open to SWE internships, collabs, or feedback on my products.
+                If something here resonates — reach out. I reply fast.
+              </p>
+            </FadeIn>
+
+            {/* Buttons */}
+            <FadeIn delay={0.3}>
+              <div className="flex flex-wrap items-center justify-center gap-4">
+                <a
+                  href={links.email}
+                  className="group inline-flex items-center gap-2 bg-accent text-[#0a0a0a] font-semibold text-sm px-8 py-4 rounded-xl hover:bg-accent2 transition-all duration-200 active:scale-95"
+                >
+                  <Mail className="w-4 h-4" />
+                  Email me
+                </a>
+                <a
+                  href={links.linkedin}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 border border-[var(--border2)] text-[var(--text)] font-mono text-sm px-6 py-4 rounded-xl hover:border-accent hover:text-accent transition-all duration-200"
+                >
+                  <LinkedinIcon className="w-4 h-4" />
+                  LinkedIn
+                </a>
+                <a
+                  href={links.github}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 border border-[var(--border2)] text-[var(--text)] font-mono text-sm px-6 py-4 rounded-xl hover:border-accent hover:text-accent transition-all duration-200"
+                >
+                  <GithubIcon className="w-4 h-4" />
+                  GitHub
+                </a>
+                <a
+                  href={links.resume}
+                  download
+                  className="inline-flex items-center gap-2 border border-[var(--border2)] text-[var(--text)] font-mono text-sm px-6 py-4 rounded-xl hover:border-accent hover:text-accent transition-all duration-200"
+                >
+                  <Download className="w-4 h-4" />
+                  Resume
+                </a>
+              </div>
+            </FadeIn>
+          </div>
+        </motion.div>
       </div>
     </section>
   );
 }
 
+function Footer() {
+  return (
+    <footer className="py-8 px-6 md:px-16 border-t border-[var(--border)]">
+      <div className="max-w-5xl mx-auto flex items-center justify-between">
+        <span className="font-mono text-xs text-[var(--muted)]">
+          © {new Date().getFullYear()} Krish Jakhar
+        </span>
+        <span className="font-mono text-xs text-[var(--muted)]">
+          Built with React · Deployed on Vercel
+        </span>
+      </div>
+    </footer>
+  );
+}
+
 // ----------------- REUSABLE UI -----------------
 function Divider() {
-  return <div className="border-t border-slate-200" />;
+  return <div className="border-t border-[var(--border)]" />;
 }
 
 function Stat(props) {
   return (
-    <div className="rounded-xl border border-slate-200 p-4">
-      <div className="text-2xl font-extrabold">{props.kpi}</div>
-      <div className="text-slate-500 text-xs mt-1">{props.label}</div>
+    <div className="rounded-xl border border-[var(--border)] p-4 bg-[var(--bg3)]">
+      <div className="text-2xl font-extrabold text-[var(--accent)]">{props.kpi}</div>
+      <div className="text-[var(--muted)] text-xs mt-1">{props.label}</div>
     </div>
   );
 }
 
-function ProjectCard(props) {
-  const p = props.item;
+function StartupCard({ startup }) {
+  const statusStyles = {
+    completed: {
+      dot: "bg-[var(--accent)]",
+      text: "text-[var(--accent)]",
+      bg: "bg-[rgba(200,245,98,0.08)]",
+      border: "border-[rgba(200,245,98,0.2)]",
+    },
+    waitlist: {
+      dot: "bg-amber-400",
+      text: "text-amber-400",
+      bg: "bg-[rgba(251,191,36,0.08)]",
+      border: "border-[rgba(251,191,36,0.2)]",
+    },
+  };
+  const s = statusStyles[startup.status] || statusStyles.waitlist;
+
   return (
-    <div className="p-0 rounded-2xl bg-white ring-1 ring-slate-200 shadow-sm hover:shadow-lg transition-all overflow-hidden">
-      {p.image ? (
-        <img src={p.image} alt={p.title} className="h-36 w-full object-cover" />
-      ) : (
-        <div className="h-36 w-full bg-gradient-to-br from-[#6AA3FF]/20 via-[#A48CF6]/20 to-[#67E8F9]/20 ring-1 ring-slate-200" />
-      )}
-      <div className="p-6">
-        <h4 className="text-lg font-semibold">{p.title}</h4>
-        <p className="mt-1 text-slate-600 text-sm leading-relaxed">{p.blurb}</p>
-        <div className="mt-3 flex flex-wrap gap-2">
-          {p.tags.map(function (t) {
-            return (
-              <span
-                key={t}
-                className="px-3 py-1.5 rounded-full text-xs bg-slate-100 text-slate-700 ring-1 ring-slate-200"
-              >
-                {t}
-              </span>
-            );
-          })}
+    <a
+      href={startup.url}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="group block bg-[var(--card)] border border-[var(--border)] rounded-2xl p-8 transition-all duration-300 hover:border-[var(--border2)] hover:-translate-y-1 hover:shadow-[0_0_40px_rgba(200,245,98,0.04)]"
+    >
+      {/* Emoji + status */}
+      <div className="flex items-start justify-between mb-6">
+        <span className="text-4xl">{startup.emoji}</span>
+        <span className={`inline-flex items-center gap-1.5 font-mono text-[11px] tracking-wide px-3 py-1 rounded-full border ${s.bg} ${s.text} ${s.border}`}>
+          <span className={`w-1.5 h-1.5 rounded-full ${s.dot}`} />
+          {startup.statusLabel}
+        </span>
+      </div>
+
+      {/* Name */}
+      <h3 className="text-xl font-bold text-[var(--text)] mb-3 group-hover:text-[var(--accent)] transition-colors duration-200">
+        {startup.name}
+      </h3>
+
+      {/* Description */}
+      <p className="text-sm text-[var(--muted)] leading-relaxed mb-6 font-light">
+        {startup.description}
+      </p>
+
+      {/* Tags */}
+      <div className="flex flex-wrap gap-2 mb-6">
+        {startup.tags.map(function (tag) {
+          return (
+            <span key={tag} className="font-mono text-[11px] text-[var(--muted)] border border-[var(--border)] px-2.5 py-1 rounded-md">
+              {tag}
+            </span>
+          );
+        })}
+      </div>
+
+      {/* CTA */}
+      <div className="flex items-center gap-1.5 font-mono text-xs text-[var(--accent)] group-hover:gap-3 transition-all duration-200">
+        Visit site
+        <span>→</span>
+      </div>
+    </a>
+  );
+}
+
+function ProjectCard({ project, featured = false }) {
+  const gradients = {
+    default: "from-[#1a1a2e] to-[#16213e]",
+    green:   "from-[#0a1f0a] to-[#0d2b0d]",
+    purple:  "from-[#1a0a2e] to-[#2d1b4e]",
+    orange:  "from-[#2e1a0a] to-[#3d2310]",
+    teal:    "from-[#0a1e2e] to-[#0d2b3d]",
+  };
+
+  return (
+    <div
+      className={
+        "group bg-[var(--card)] border border-[var(--border)] rounded-2xl overflow-hidden transition-all duration-300 hover:border-[var(--border2)] hover:-translate-y-1 hover:shadow-[0_0_40px_rgba(200,245,98,0.04)]" +
+        (featured ? " flex flex-col md:flex-row gap-0" : "")
+      }
+    >
+      {/* Gradient visual */}
+      <div
+        className={
+          "bg-gradient-to-br " +
+          (gradients[project.color] || gradients.default) +
+          " flex items-center justify-center relative overflow-hidden" +
+          (featured ? " md:w-2/5 h-56 md:h-auto min-h-[220px]" : " h-44")
+        }
+      >
+        {/* Color glow behind icon */}
+        <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+          <div
+            className="w-32 h-32 rounded-full opacity-20 blur-2xl"
+            style={{ background: project.glowColor || "rgba(200,245,98,0.4)" }}
+          />
         </div>
-        <div className="mt-4 flex items-center gap-3">
-          {p.repo ? (
+
+        {/* Subtle grid pattern */}
+        <div
+          className="absolute inset-0 opacity-20"
+          style={{
+            backgroundImage:
+              "linear-gradient(var(--border) 1px, transparent 1px), linear-gradient(90deg, var(--border) 1px, transparent 1px)",
+            backgroundSize: "32px 32px",
+          }}
+        />
+
+        {/* Styled icon container */}
+        <div className="relative z-10 flex flex-col items-center gap-3">
+          <div className="w-16 h-16 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center backdrop-blur-sm">
+            <span
+              className="text-3xl"
+              style={{ filter: "drop-shadow(0 0 12px rgba(255,255,255,0.15))" }}
+            >
+              {project.emoji || "⚡"}
+            </span>
+          </div>
+          <span className="font-mono text-[11px] text-white/30 tracking-widest uppercase">
+            {project.name}
+          </span>
+        </div>
+      </div>
+
+      {/* Content */}
+      <div className={"p-8 flex flex-col justify-between" + (featured ? " md:w-3/5" : "")}>
+        <div>
+          {/* Tags row */}
+          <div className="flex flex-wrap gap-2 mb-4">
+            {project.tags && project.tags.map(function (tag) {
+              return (
+                <span key={tag} className="font-mono text-[11px] text-[var(--muted)] border border-[var(--border)] px-2.5 py-1 rounded-md">
+                  {tag}
+                </span>
+              );
+            })}
+          </div>
+
+          {/* Name */}
+          <h3 className={"font-bold text-[var(--text)] mb-3 group-hover:text-[var(--accent)] transition-colors duration-200" + (featured ? " text-2xl" : " text-lg")}>
+            {project.name}
+          </h3>
+
+          {/* Description */}
+          <p className="text-sm text-[var(--muted)] leading-relaxed font-light mb-6">
+            {project.description}
+          </p>
+        </div>
+
+        {/* Links */}
+        <div className="flex items-center gap-4">
+          {project.github && (
             <a
-              href={p.repo}
+              href={project.github}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-slate-800 hover:text-slate-900 inline-flex items-center gap-1 text-sm"
+              className="font-mono text-xs text-[var(--muted)] hover:text-[var(--accent)] transition-colors duration-200 flex items-center gap-1.5"
             >
-              <span>View Repo</span>
-              <span>→</span>
+              <GithubIcon className="w-3.5 h-3.5" /> GitHub
             </a>
-          ) : null}
-          {p.demo ? (
+          )}
+          {project.demo && (
             <a
-              href={p.demo}
+              href={project.demo}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-slate-800 hover:text-slate-900 inline-flex items-center gap-1 text-sm"
+              className="font-mono text-xs text-[var(--accent)] flex items-center gap-1.5 group-hover:gap-3 transition-all duration-200"
             >
-              <span>Live Demo</span>
-              <span>↗</span>
+              Live demo →
             </a>
-          ) : null}
+          )}
         </div>
       </div>
     </div>
   );
 }
+
+

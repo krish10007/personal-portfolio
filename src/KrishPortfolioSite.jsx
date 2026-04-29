@@ -293,7 +293,6 @@ function CustomCursor() {
 
 // ----------------- PAGE -----------------
 export default function KrishPortfolioSite() {
-  const [open, setOpen] = useState(false);
   const whiteRef = useRef(null);
 
   useEffect(function () {
@@ -303,7 +302,7 @@ export default function KrishPortfolioSite() {
   return (
     <div className="min-h-screen font-sans">
       <CustomCursor />
-      <Header open={open} setOpen={setOpen} />
+      <Header />
 
       {/* Hero */}
       <section
@@ -323,13 +322,13 @@ export default function KrishPortfolioSite() {
         />
 
         {/* Content */}
-        <div className="relative z-10 flex flex-col items-center text-center px-6 select-none">
+        <div className="relative z-10 flex flex-col items-center text-center px-4 select-none w-full">
           {/* Heading */}
           <motion.h1
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.1 }}
-            className="text-6xl md:text-8xl font-bold tracking-tight text-[var(--text)] leading-none mb-6"
+            className="text-5xl md:text-8xl font-bold tracking-tight text-[var(--text)] leading-none mb-6"
           >
             I'm Krish.
           </motion.h1>
@@ -339,17 +338,17 @@ export default function KrishPortfolioSite() {
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.2 }}
-            className="font-mono text-sm text-[var(--muted)] tracking-wide mb-12"
+            className="font-mono text-xs sm:text-sm text-[var(--muted)] tracking-wide mb-12 px-4 leading-relaxed text-center"
           >
             CS Student · Indie Developer · Startup Builder · YouTube Creator
           </motion.p>
 
-          {/* Stats row */}
+          {/* Stats — 2×2 grid on mobile, single row on desktop */}
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.3 }}
-            className="flex items-center"
+            className="grid grid-cols-2 md:flex md:flex-row mt-4 border border-[var(--border2)] rounded-2xl overflow-hidden w-full max-w-xs md:max-w-none md:border-0 md:rounded-none md:overflow-visible"
           >
             {[
               { number: "4+",   label: "Apps Shipped" },
@@ -361,8 +360,12 @@ export default function KrishPortfolioSite() {
                 <div
                   key={stat.label}
                   className={
-                    "flex flex-col items-center px-8" +
-                    (i < arr.length - 1 ? " border-r border-[var(--border2)]" : "")
+                    "flex flex-col items-center py-4 md:py-0 md:px-8" +
+                    " border-[var(--border2)]" +
+                    (i % 2 === 0 && i < arr.length - 1 ? " border-r" : "") +
+                    (i < 2 ? " border-b md:border-b-0" : "") +
+                    (i > 0 && i % 2 !== 0 ? "" : "") +
+                    " md:border-r md:last:border-r-0"
                   }
                 >
                   <span className="text-2xl font-bold text-[var(--text)]">
@@ -411,9 +414,8 @@ export default function KrishPortfolioSite() {
 }
 
 // ----------------- SECTIONS -----------------
-function Header(props) {
-  const open = props.open;
-  const setOpen = props.setOpen;
+function Header() {
+  const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
 
   useEffect(function () {
@@ -439,7 +441,7 @@ function Header(props) {
           </a>
         </div>
 
-        {/* Center: nav */}
+        {/* Center: nav — desktop only */}
         <nav className="hidden md:flex items-center justify-center gap-8 col-start-2 col-end-3">
           {["about", "projects", "startups", "videos", "timeline"].map(function (id) {
             return (
@@ -463,7 +465,7 @@ function Header(props) {
           </a>
         </nav>
 
-        {/* Right: icons + contact */}
+        {/* Right: icons + contact — desktop only */}
         <div className="hidden md:flex items-center justify-end gap-2">
           <a
             href={links.github}
@@ -508,19 +510,16 @@ function Header(props) {
           </a>
         </div>
 
-        {/* Mobile menu button */}
-        <div className="md:hidden flex items-center justify-end col-start-3 justify-self-end">
+        {/* Mobile: hamburger */}
+        <div className="md:hidden flex items-center justify-end col-start-3">
           <button
             onClick={function () { setOpen(!open); }}
-            className="inline-flex items-center justify-center h-9 w-9 rounded-md border border-[var(--border2)] hover:border-[var(--border2)] text-[var(--muted)]"
-            aria-label="Open menu"
+            className="flex flex-col gap-1.5 p-2 text-[var(--text)]"
+            aria-label={open ? "Close menu" : "Open menu"}
           >
-            <span className="sr-only">Menu</span>
-            <div className="space-y-1.5">
-              <span className={"block h-0.5 w-5 bg-[var(--text)] transition " + (open ? "rotate-45 translate-y-1.5" : "")} />
-              <span className={"block h-0.5 w-5 bg-[var(--text)] transition " + (open ? "opacity-0" : "")} />
-              <span className={"block h-0.5 w-5 bg-[var(--text)] transition " + (open ? "-rotate-45 -translate-y-1.5" : "")} />
-            </div>
+            <span className={"block h-0.5 w-5 bg-[var(--text)] transition-all duration-200 " + (open ? "rotate-45 translate-y-2" : "")} />
+            <span className={"block h-0.5 w-5 bg-[var(--text)] transition-all duration-200 " + (open ? "opacity-0" : "")} />
+            <span className={"block h-0.5 w-5 bg-[var(--text)] transition-all duration-200 " + (open ? "-rotate-45 -translate-y-2" : "")} />
           </button>
         </div>
       </div>
@@ -528,45 +527,41 @@ function Header(props) {
       {/* Mobile dropdown */}
       <div
         className={
-          "md:hidden overflow-hidden transition-[max-height,opacity] duration-300 " +
-          (open ? "max-h-72 opacity-100" : "max-h-0 opacity-0")
+          "md:hidden overflow-hidden transition-[max-height,opacity] duration-300 bg-[var(--bg)]/95 backdrop-blur-xl " +
+          (open ? "max-h-96 opacity-100 border-b border-[var(--border)]" : "max-h-0 opacity-0")
         }
       >
-        <div className="px-5 pb-4 pt-2 border-t border-[var(--border)]">
-          <ul className="flex flex-col gap-1 font-mono text-sm">
-            {["about", "projects", "startups", "videos", "timeline"].map(function (id) {
-              return (
-                <li key={id}>
-                  <a
-                    onClick={function () { setOpen(false); }}
-                    href={"#" + id}
-                    className="block py-2 text-[var(--muted)] hover:text-[var(--text)] capitalize transition-colors"
-                  >
-                    {id}
-                  </a>
-                </li>
-              );
-            })}
-            <li>
+        <div className="px-6 py-4 flex flex-col gap-1">
+          {["about", "projects", "startups", "videos", "timeline"].map(function (id) {
+            return (
               <a
+                key={id}
                 onClick={function () { setOpen(false); }}
-                href={links.resume}
-                className="block py-2 text-[var(--muted)] hover:text-[var(--text)] transition-colors"
+                href={"#" + id}
+                className="font-mono text-sm text-[var(--muted)] hover:text-[var(--text)] py-3 border-b border-[var(--border)] capitalize transition-colors duration-200 last:border-b-0"
               >
-                Resume ↗
+                {id}
               </a>
-            </li>
-            <li className="pt-2">
-              <a
-                onClick={function () { setOpen(false); }}
-                href={links.email}
-                className="inline-flex items-center gap-2 py-2 text-[var(--muted)] hover:text-accent transition-colors"
-              >
-                <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
-                Email
-              </a>
-            </li>
-          </ul>
+            );
+          })}
+          <a
+            onClick={function () { setOpen(false); }}
+            href={links.resume}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="font-mono text-sm text-[var(--muted)] hover:text-[var(--text)] py-3 border-b border-[var(--border)] transition-colors duration-200"
+          >
+            Resume ↗
+          </a>
+          <div className="pt-3">
+            <a
+              onClick={function () { setOpen(false); }}
+              href={links.email}
+              className="block text-center bg-[var(--accent)] text-[#0a0a0a] font-semibold text-sm px-4 py-3 rounded-xl w-full transition-all duration-200 hover:bg-[var(--accent2)]"
+            >
+              Contact
+            </a>
+          </div>
         </div>
       </div>
     </header>
@@ -577,12 +572,12 @@ function AboutSection() {
   return (
     <section
       id="about"
-      className="section-glow-top px-6 md:px-12 lg:px-16 pt-16 md:pt-24 pb-16 md:pb-24 bg-[var(--bg2)]"
+      className="section-glow-top px-4 md:px-12 lg:px-16 pt-16 md:pt-24 pb-16 md:pb-24 bg-[var(--bg2)]"
     >
       <div className="mx-auto max-w-7xl grid md:grid-cols-2 gap-12 items-center">
         <FadeIn direction="right">
           <div>
-            <h2 className="text-4xl md:text-5xl font-extrabold tracking-tight text-[var(--text)]">
+            <h2 className="text-3xl md:text-4xl lg:text-5xl font-extrabold tracking-tight text-[var(--text)]">
               Turning ideas into real products.
             </h2>
             <p className="mt-6 text-lg md:text-xl text-[var(--muted)] border-l-2 border-[var(--accent)] pl-6">
@@ -636,7 +631,7 @@ function AboutSection() {
 
 function ProjectsSection() {
   return (
-    <section id="projects" className="section-glow-top py-24 px-6 md:px-16 bg-[var(--bg)]">
+    <section id="projects" className="section-glow-top py-24 px-4 md:px-16 bg-[var(--bg)]">
       <div className="max-w-5xl mx-auto">
         <FadeIn>
           <p className="font-mono text-xs text-[var(--accent)] tracking-[3px] uppercase mb-3 flex items-center gap-3">
@@ -645,7 +640,7 @@ function ProjectsSection() {
           </p>
         </FadeIn>
         <FadeIn delay={0.1}>
-          <h2 className="text-5xl md:text-6xl font-bold tracking-tight text-[var(--text)] mb-4">
+          <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight text-[var(--text)] mb-4">
             Things I've built.
           </h2>
         </FadeIn>
@@ -679,7 +674,7 @@ function ProjectsSection() {
 
 function StartupsSection() {
   return (
-    <section id="startups" className="section-glow-top py-24 px-6 md:px-16 bg-[var(--bg2)]">
+    <section id="startups" className="section-glow-top py-24 px-4 md:px-16 bg-[var(--bg2)]">
       <div className="max-w-5xl mx-auto">
         <FadeIn>
           <p className="font-mono text-xs text-[var(--accent)] tracking-[3px] uppercase mb-3 flex items-center gap-3">
@@ -688,7 +683,7 @@ function StartupsSection() {
           </p>
         </FadeIn>
         <FadeIn delay={0.1}>
-          <h2 className="text-5xl md:text-6xl font-bold tracking-tight text-[var(--text)] mb-4">
+          <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight text-[var(--text)] mb-4">
             Things I'm building.
           </h2>
         </FadeIn>
@@ -716,7 +711,7 @@ function YouTubeSection() {
   const { videos, loading, error } = useYouTubeVideos(CHANNEL_ID);
 
   return (
-    <section id="videos" className="section-glow-top py-24 px-6 md:px-16 bg-[var(--bg2)]">
+    <section id="videos" className="section-glow-top py-24 px-4 md:px-16 bg-[var(--bg2)]">
       <div className="max-w-5xl mx-auto">
 
         {/* Section label */}
@@ -728,7 +723,7 @@ function YouTubeSection() {
         </FadeIn>
 
         <FadeIn delay={0.1}>
-          <h2 className="text-5xl md:text-6xl font-bold tracking-tight text-[var(--text)] mb-2">
+          <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight text-[var(--text)] mb-2">
             Startup Diaries.
           </h2>
         </FadeIn>
@@ -883,7 +878,7 @@ function TimelineSection() {
   const isInView = useInView(containerRef, { once: true, margin: "-100px" });
 
   return (
-    <section id="timeline" className="section-glow-top py-24 px-6 md:px-16 bg-[var(--bg)]">
+    <section id="timeline" className="section-glow-top py-24 px-4 md:px-16 bg-[var(--bg)]">
       <div className="max-w-4xl mx-auto">
 
         {/* Section label */}
@@ -895,7 +890,7 @@ function TimelineSection() {
         </FadeIn>
 
         <FadeIn delay={0.1}>
-          <h2 className="text-5xl md:text-6xl font-bold tracking-tight text-[var(--text)] mb-4">
+          <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight text-[var(--text)] mb-4">
             The journey so far.
           </h2>
         </FadeIn>
@@ -909,18 +904,18 @@ function TimelineSection() {
         {/* Timeline container */}
         <div ref={containerRef} className="relative">
 
-          {/* Animated accent line that draws downward */}
+          {/* Animated accent line — desktop center, hidden on mobile */}
           <motion.div
             ref={lineRef}
-            className="absolute left-1/2 -translate-x-1/2 top-0 w-px bg-[var(--accent)] origin-top"
+            className="hidden md:block absolute left-1/2 -translate-x-1/2 top-0 w-px bg-[var(--accent)] origin-top"
             initial={{ scaleY: 0, opacity: 0 }}
             animate={isInView ? { scaleY: 1, opacity: 1 } : { scaleY: 0, opacity: 0 }}
             transition={{ duration: 1.4, ease: [0.21, 0.47, 0.32, 0.98] }}
             style={{ height: "100%" }}
           />
 
-          {/* Static background line (faint guide, always visible) */}
-          <div className="absolute left-1/2 -translate-x-1/2 top-0 w-px h-full bg-[var(--border2)]" />
+          {/* Static background line — desktop center / mobile left */}
+          <div className="absolute md:left-1/2 md:-translate-x-1/2 left-[11px] top-0 w-px h-full bg-[var(--border2)]" />
 
           {/* Milestone items */}
           <div className="flex flex-col gap-12 relative">
@@ -932,13 +927,17 @@ function TimelineSection() {
                   direction={isLeft ? "right" : "left"}
                   delay={0.2 + i * 0.15}
                 >
-                  <div className={"flex items-center gap-8 " + (isLeft ? "flex-row" : "flex-row-reverse")}>
+                  {/* Mobile: left-rail layout. Desktop: alternating left/right */}
+                  <div className={"relative pl-8 md:pl-0 flex items-center gap-4 md:gap-8 flex-row " + (isLeft ? "md:flex-row" : "md:flex-row-reverse")}>
+
+                    {/* Mobile-only dot */}
+                    <div className="md:hidden absolute left-0 top-6 w-3 h-3 rounded-full bg-[var(--accent)] ring-4 ring-[var(--bg)] flex-shrink-0 z-10" />
 
                     {/* Card */}
                     <div
                       className={
-                        "w-5/12 group bg-[var(--card)] border border-[var(--border)] rounded-2xl p-6 transition-all duration-300 hover:border-[var(--border2)] hover:-translate-y-1 hover:shadow-[0_0_30px_rgba(200,245,98,0.04)] " +
-                        (isLeft ? "text-right" : "text-left")
+                        "w-full md:w-5/12 group bg-[var(--card)] border border-[var(--border)] rounded-2xl p-6 transition-all duration-300 hover:border-[var(--border2)] hover:-translate-y-1 hover:shadow-[0_0_30px_rgba(200,245,98,0.04)] text-left " +
+                        (isLeft ? "md:text-right" : "md:text-left")
                       }
                     >
                       <p className="font-mono text-[11px] text-[var(--accent)] tracking-widest uppercase mb-2">
@@ -949,8 +948,8 @@ function TimelineSection() {
                       </p>
                     </div>
 
-                    {/* Center dot */}
-                    <div className="relative z-10 flex-shrink-0 w-2/12 flex items-center justify-center">
+                    {/* Center dot — desktop only */}
+                    <div className="hidden md:flex relative z-10 flex-shrink-0 w-2/12 items-center justify-center">
                       <motion.div
                         initial={{ scale: 0, opacity: 0 }}
                         animate={isInView ? { scale: 1, opacity: 1 } : { scale: 0, opacity: 0 }}
@@ -959,8 +958,8 @@ function TimelineSection() {
                       />
                     </div>
 
-                    {/* Empty space opposite side */}
-                    <div className="w-5/12" />
+                    {/* Empty spacer — desktop only */}
+                    <div className="hidden md:block w-5/12" />
 
                   </div>
                 </FadeIn>
@@ -976,7 +975,7 @@ function TimelineSection() {
 
 function ContactSection() {
   return (
-    <section id="contact" className="section-glow-top py-24 px-6 md:px-16 bg-[var(--bg)]">
+    <section id="contact" className="section-glow-top py-24 px-4 md:px-16 bg-[var(--bg)]">
       <div className="max-w-4xl mx-auto">
         <motion.div
           className="bg-[var(--card)] border rounded-3xl p-12 md:p-20 text-center relative overflow-hidden"
@@ -1028,10 +1027,10 @@ function ContactSection() {
 
             {/* Buttons */}
             <FadeIn delay={0.3}>
-              <div className="flex flex-wrap items-center justify-center gap-4">
+              <div className="flex flex-col sm:flex-row flex-wrap items-center justify-center gap-4">
                 <a
                   href={links.email}
-                  className="group inline-flex items-center gap-2 bg-accent text-[#0a0a0a] font-semibold text-sm px-8 py-4 rounded-xl hover:bg-accent2 transition-all duration-200 active:scale-95"
+                  className="group inline-flex items-center justify-center gap-2 bg-accent text-[#0a0a0a] font-semibold text-sm px-8 py-4 rounded-xl hover:bg-accent2 transition-all duration-200 active:scale-95 w-full sm:w-auto"
                 >
                   <Mail className="w-4 h-4" />
                   Email me
@@ -1073,7 +1072,7 @@ function ContactSection() {
 
 function Footer() {
   return (
-    <footer className="py-8 px-6 md:px-16 border-t border-[var(--border)]">
+    <footer className="py-8 px-4 md:px-16 border-t border-[var(--border)]">
       <div className="max-w-5xl mx-auto flex items-center justify-between">
         <span className="font-mono text-xs text-[var(--muted)]">
           © {new Date().getFullYear()} Krish Jakhar

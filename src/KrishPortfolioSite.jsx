@@ -348,7 +348,7 @@ export default function KrishPortfolioSite() {
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.3 }}
-            className="grid grid-cols-2 md:flex md:flex-row mt-4 border border-[var(--border2)] rounded-2xl overflow-hidden w-full max-w-xs md:max-w-none md:border-0 md:rounded-none md:overflow-visible"
+            className="grid grid-cols-2 md:flex md:flex-row md:justify-center md:items-center mt-4 border border-[var(--border2)] rounded-2xl overflow-hidden w-full max-w-xs md:max-w-none md:w-auto md:border-0 md:rounded-none md:overflow-visible md:gap-12 lg:gap-16"
           >
             {[
               { number: "4+",   label: "Apps Shipped" },
@@ -360,18 +360,16 @@ export default function KrishPortfolioSite() {
                 <div
                   key={stat.label}
                   className={
-                    "flex flex-col items-center py-4 md:py-0 md:px-8" +
+                    "flex flex-col items-center py-4 md:py-0 md:px-0" +
                     " border-[var(--border2)]" +
-                    (i % 2 === 0 && i < arr.length - 1 ? " border-r" : "") +
-                    (i < 2 ? " border-b md:border-b-0" : "") +
-                    (i > 0 && i % 2 !== 0 ? "" : "") +
-                    " md:border-r md:last:border-r-0"
+                    (i % 2 === 0 && i < arr.length - 1 ? " border-r md:border-r-0" : "") +
+                    (i < 2 ? " border-b md:border-b-0" : "")
                   }
                 >
-                  <span className="text-2xl font-bold text-[var(--text)]">
+                  <span className="text-2xl md:text-3xl font-bold text-[var(--text)]">
                     {stat.number}
                   </span>
-                  <span className="text-[10px] font-mono text-[var(--muted)] uppercase tracking-widest mt-1">
+                  <span className="text-[10px] md:text-xs font-mono text-[var(--muted)] uppercase tracking-widest mt-1">
                     {stat.label}
                   </span>
                 </div>
